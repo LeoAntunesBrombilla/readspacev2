@@ -1,7 +1,3 @@
-Certainly! Integrating unit testing as a major goal aligns well with the clean architecture principles. Here's an updated README with an emphasis on unit testing and a note on adhering to the clean architecture:
-
----
-
 ## ReadSpace Backend
 
 ReadSpace is a backend service built with Go using the Gin framework. The project adheres to the principles of clean architecture, ensuring a clear separation of concerns, scalability, and maintainability.
