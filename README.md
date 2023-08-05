@@ -84,5 +84,3 @@ The project's test coverage aims to be comprehensive, covering all application f
 Feel free to fork this repository, submit PRs or raise issues if you find any.
 
 ---
-
-This README provides a holistic view of your project while emphasizing the clean architecture and importance of unit testing. As you progress in development, you might want to add more details or refine certain sections based on the specifics of your application.
