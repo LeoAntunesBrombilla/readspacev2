@@ -1,6 +1,44 @@
-## ReadSpace Backend
+# ReadSpace Backend
 
-ReadSpace is a backend service built with Go using the Gin framework. The project adheres to the principles of clean architecture, ensuring a clear separation of concerns, scalability, and maintainability.
+This project provides backend support for the ReadSpace application, supporting functionalities like user authentication, managing reading sessions, and more. It is built with Go, and uses Docker for containerization and Postgres for data persistence.
+
+## Setup Instructions
+
+### Prerequisites:
+
+1. Ensure you have **Docker** and **Docker Compose** installed on your machine. If not, you can get Docker [here](https://docs.docker.com/get-docker/) and Docker Compose [here](https://docs.docker.com/compose/install/).
+2. Clone the repository to your local machine.
+
+### Configuration:
+
+1. **Environment Variables**:
+    - At the root of the `backend` directory, create a `.env` file.
+    - Use the provided `.env.example` as a template to fill in the required environment variables.
+
+### Steps to Run:
+
+1. **Build the Docker containers**:
+   Navigate to the directory containing the `docker-compose.yml` file and run:
+   ```bash
+   docker-compose build
+   ```
+
+2. **Run the Docker containers**:
+   ```bash
+   docker-compose up
+   ```
+
+3. After executing the above steps, the backend service should be up and running, and you can access it at `http://localhost:8080`.
+
+### Development:
+
+- If you make changes to the Go code or environment variables, you will need to stop the containers, rebuild, and restart them. Use the following commands:
+
+   ```bash
+   docker-compose down
+   docker-compose build
+   docker-compose up
+   ```
 
 ### Features
 
@@ -54,17 +92,6 @@ ReadSpace is a backend service built with Go using the Gin framework. The projec
 - `GET /session/{sessionID}`: Retrieve details of a specific reading session.
 - `PUT /session/{sessionID}`: Edit a specific reading session.
 - `DELETE /session/{sessionID}`: Delete a specific reading session.
-
-### Setting Up
-
-1. **Database Setup**: Ensure you have PostgreSQL installed and running. Create a database and note down the credentials.
-
-2. **Environment Variables**: Set up required environment variables like `DATABASE_URL`, `JWT_SECRET_KEY`, etc.
-
-3. **Running the Application**:
-   ```bash
-   go run cmd/api/main.go
-   ```
 
 ### Testing
 

@@ -1,12 +1,21 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"readspacev2/pkg/database"
 
 	"github.com/gin-gonic/gin"
 )
+
+func init() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found")
+	}
+}
 
 func main() {
 	db, err := database.Connect()

@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -14,7 +15,14 @@ const (
 )
 
 func Connect() (*pgxpool.Pool, error) {
-	connStr := "host=db user=postgres password=postgres dbname=readspacev2 port=5432 sslmode=disable"
+
+	dbHost := os.Getenv("DB_HOST")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASS")
+	dbName := os.Getenv("DB_NAME")
+	dbPort := os.Getenv("DB_PORT")
+
+	connStr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", dbHost, dbUser, dbPassword, dbName, dbPort)
 
 	var dbpool *pgxpool.Pool
 	var err error

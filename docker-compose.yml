@@ -16,5 +16,7 @@ services:
       - '8080:8080'
     depends_on:
       - db
+    volumes:
+      - ./backend/.env:/backend/.env
 volumes:
   postgres_data:
