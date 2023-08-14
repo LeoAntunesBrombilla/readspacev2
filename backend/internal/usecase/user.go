@@ -1,0 +1,18 @@
+package usecase
+
+import (
+	"readspacev2/internal/entity"
+	"readspacev2/internal/repository"
+)
+
+type UserUseCase struct {
+	repo repository.UserRepository
+}
+
+func NewUserUseCase(repo repository.UserRepository) *UserUseCase {
+	return &UserUseCase{repo: repo}
+}
+
+func (useCase *UserUseCase) CreateUser(user *entity.User) error {
+	return useCase.repo.Create(user)
+}
