@@ -8,4 +8,5 @@ type UserRepository interface {
 	Update(user *entity.User) error
 	Delete(id int64) error
 	ListAll() ([]*entity.User, error)
+	FindByUserName(string) (*entity.User, error)
 }

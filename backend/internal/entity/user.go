@@ -1,9 +1,11 @@
 package entity
 
+import "time"
+
 type User struct {
 	ID        int64
 	Email     string
 	Username  string
 	Password  string
-	CreatedAt string
+	CreatedAt time.Time
 }

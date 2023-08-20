@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
+	"net/http"
 	"os"
 )
 
@@ -13,10 +14,13 @@ var (
 )
 
 // TODO create session for admin
-func SessionMiddleware() gin.HandlerFunc {
+func AuthenticationMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		session, _ := store.Get(c.Request, "user-session")
-		c.Set("session", session)
+		session, err := store.Get(c.Request, "user-session")
+		if err != nil || session.Values["username"] == nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
 		c.Next()
 	}
 }

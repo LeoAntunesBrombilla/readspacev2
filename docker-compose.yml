@@ -19,5 +19,9 @@ services:
     volumes:
       - ./backend/.env:/backend/.env
       - ./backend/migrations/:/backend/migrations/
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
 volumes:
   postgres_data:
