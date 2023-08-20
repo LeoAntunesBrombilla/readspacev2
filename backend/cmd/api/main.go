@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"github.com/boj/redistore"
 	"github.com/joho/godotenv"
 	"log"
 	"net/http"
+	"os"
 	"readspacev2/internal/handler"
 	"readspacev2/internal/middleware"
 	"readspacev2/internal/migration"
@@ -34,6 +36,16 @@ func main() {
 
 	cfg := config.New()
 	ctx := context.Background()
+	addr := os.Getenv("REDIS_ADDR")
+	if addr == "" {
+		addr = "localhost:6379"
+	}
+	secretKey := os.Getenv("SECRET_KEY")
+
+	store, err := redistore.NewRediStore(10, "tcp", addr, "", []byte(secretKey))
+	if err != nil {
+		log.Fatalf("Failed to create RediStore: %v", err)
+	}
 
 	//Vamos aplicar o migrate aqui
 	if err := migration.ApplyMigrations(cfg.DatabaseConnStr); err != nil {
@@ -46,14 +58,20 @@ func main() {
 
 	authRepo, _ := redis.NewRedisAuthRepository(ctx)
 	authUseCase := usecase.NewAuthenticationUseCase(authRepo, userRepo)
-
-	authHandler := handler.NewAuthenticationHandler(authUseCase)
+	authHandler := handler.NewAuthenticationHandler(authUseCase, store)
 
 	r := gin.Default()
 
 	r.POST("/login", authHandler.Login)
-	r.Use(middleware.AuthenticationMiddleware())
-	r.POST("/user", func(c *gin.Context) { userHandler.CreateUser(c.Writer, c.Request) })
+
+	r.Use(middleware.AuthenticationMiddleware(store))
+
+	userGroup := r.Group("/user")
+	{
+		userGroup.POST("/", userHandler.CreateUser)
+		userGroup.GET("/", userHandler.ListAllUsers)
+	}
+
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",

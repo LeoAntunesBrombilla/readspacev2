@@ -63,9 +63,32 @@ func (u *userRepository) Delete(id int64) error {
 	panic("implement me")
 }
 
-func (u *userRepository) ListAll() ([]*entity.User, error) {
-	//TODO implement me
-	panic("implement me")
+func (u *userRepository) ListAllUsers() ([]*entity.User, error) {
+	query := `SELECT id, email, username, password, created_at FROM users`
+	rows, err := u.db.Query(context.Background(), query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var users []*entity.User
+
+	for rows.Next() {
+		var user entity.User
+
+		if err := rows.Scan(&user.ID, &user.Email, &user.Username, &user.Password, &user.CreatedAt); err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
 
 func (u *userRepository) FindByUserName(username string) (*entity.User, error) {
