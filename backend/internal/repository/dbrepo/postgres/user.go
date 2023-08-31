@@ -58,9 +58,15 @@ func (u *userRepository) Update(user *entity.User) error {
 	panic("implement me")
 }
 
-func (u *userRepository) Delete(id int64) error {
-	//TODO implement me
-	panic("implement me")
+func (u *userRepository) DeleteUserById(id *int64) error {
+	query := `DELETE FROM users WHERE id = $1`
+	_, err := u.db.Exec(context.Background(), query, id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (u *userRepository) ListAllUsers() ([]*entity.User, error) {

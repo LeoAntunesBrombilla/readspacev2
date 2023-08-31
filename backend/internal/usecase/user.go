@@ -20,3 +20,7 @@ func (useCase *UserUseCase) CreateUser(user *entity.User) error {
 func (useCase *UserUseCase) ListAllUsers() ([]*entity.User, error) {
 	return useCase.repo.ListAllUsers()
 }
+
+func (useCase *UserUseCase) DeleteUserById(id *int64) error {
+	return useCase.repo.DeleteUserById(id)
+}

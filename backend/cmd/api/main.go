@@ -70,6 +70,7 @@ func main() {
 	{
 		userGroup.POST("/", userHandler.CreateUser)
 		userGroup.GET("/", userHandler.ListAllUsers)
+		userGroup.DELETE("/", userHandler.DeleteUserById)
 	}
 
 	r.GET("/ping", func(c *gin.Context) {

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"readspacev2/internal/entity"
 	"readspacev2/internal/usecase"
+	"strconv"
 )
 
 type UserHandler struct {
@@ -43,4 +44,24 @@ func (h *UserHandler) ListAllUsers(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, users)
+}
+
+func (h *UserHandler) DeleteUserById(c *gin.Context) {
+	var id int64
+
+	idStr := c.DefaultQuery("id", "0")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+
+	if err != nil || id == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID query parameter"})
+		return
+	}
+
+	err = h.userUseCase.DeleteUserById(&id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error deleting user by Id"})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": "User deleted with success"})
 }
