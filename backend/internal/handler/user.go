@@ -17,7 +17,7 @@ func NewUserHandler(userUseCase *usecase.UserUseCase) *UserHandler {
 }
 
 func (h *UserHandler) CreateUser(c *gin.Context) {
-	var user entity.User
+	var user entity.UserEntity
 
 	err := c.ShouldBindJSON(&user)
 
@@ -63,5 +63,33 @@ func (h *UserHandler) DeleteUserById(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error deleting user by Id"})
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": "User deleted with success"})
+	c.JSON(http.StatusOK, gin.H{"success": "UserEntity deleted with success"})
+}
+
+func (h *UserHandler) UpdateUser(c *gin.Context) {
+	var id int64
+
+	idStr := c.DefaultQuery("id", "0")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+
+	if err != nil || id == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID query parameter"})
+		return
+	}
+
+	var userUpdateDetails entity.UserUpdateDetails
+
+	if err := c.ShouldBindJSON(&userUpdateDetails); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	err = h.userUseCase.UpdateUser(&id, &userUpdateDetails)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": "UserEntity updated with success"})
 }

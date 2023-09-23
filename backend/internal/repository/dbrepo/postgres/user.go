@@ -3,11 +3,14 @@ package postgres
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 	"readspacev2/internal/entity"
 	"readspacev2/internal/repository"
+	"strconv"
+	"strings"
 )
 
 type userRepository struct {
@@ -18,7 +21,7 @@ func NewUserRepository(db *pgxpool.Pool) repository.UserRepository {
 	return &userRepository{db: db}
 }
 
-func (u *userRepository) Create(user *entity.User) error {
+func (u *userRepository) Create(user *entity.UserEntity) error {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -48,14 +51,45 @@ func (u *userRepository) Create(user *entity.User) error {
 	return nil
 }
 
-func (u *userRepository) GetByID(id int64) (*entity.User, error) {
+func (u *userRepository) GetByID(id int64) (*entity.UserEntity, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (u *userRepository) Update(user *entity.User) error {
-	//TODO implement me
-	panic("implement me")
+func (u *userRepository) UpdateUser(id *int64, user *entity.UserUpdateDetails) error {
+	updateFields := []string{}
+	args := []interface{}{}
+	argCounter := 1
+
+	if user.Email != "" {
+		updateFields = append(updateFields, "email = $"+strconv.Itoa(argCounter))
+		args = append(args, user.Email)
+		argCounter++
+	}
+
+	if user.Username != "" {
+		updateFields = append(updateFields, "username = $"+strconv.Itoa(argCounter))
+		args = append(args, user.Username)
+		argCounter++
+	}
+
+	args = append(args, id)
+
+	query := fmt.Sprintf(
+		"UPDATE users SET %s WHERE id = $%d",
+		strings.Join(updateFields, ", "),
+		argCounter,
+	)
+
+	_, err := u.db.Exec(context.Background(), query, args...)
+
+	if err != nil {
+		fmt.Println("AAAQUI")
+		fmt.Println(err)
+		return fmt.Errorf("error updating user: %w", err)
+	}
+
+	return nil
 }
 
 func (u *userRepository) DeleteUserById(id *int64) error {
@@ -69,7 +103,7 @@ func (u *userRepository) DeleteUserById(id *int64) error {
 	return nil
 }
 
-func (u *userRepository) ListAllUsers() ([]*entity.User, error) {
+func (u *userRepository) ListAllUsers() ([]*entity.UserEntity, error) {
 	query := `SELECT id, email, username, password, created_at FROM users`
 	rows, err := u.db.Query(context.Background(), query)
 
@@ -79,10 +113,10 @@ func (u *userRepository) ListAllUsers() ([]*entity.User, error) {
 
 	defer rows.Close()
 
-	var users []*entity.User
+	var users []*entity.UserEntity
 
 	for rows.Next() {
-		var user entity.User
+		var user entity.UserEntity
 
 		if err := rows.Scan(&user.ID, &user.Email, &user.Username, &user.Password, &user.CreatedAt); err != nil {
 			return nil, err
@@ -97,11 +131,11 @@ func (u *userRepository) ListAllUsers() ([]*entity.User, error) {
 	return users, nil
 }
 
-func (u *userRepository) FindByUserName(username string) (*entity.User, error) {
+func (u *userRepository) FindByUserName(username string) (*entity.UserEntity, error) {
 	query := `SELECT id, email, username, password, created_at FROM users WHERE username = $1`
 	row := u.db.QueryRow(context.Background(), query, username)
 
-	var user entity.User
+	var user entity.UserEntity
 
 	if err := row.Scan(&user.ID, &user.Email, &user.Username, &user.Password, &user.CreatedAt); err != nil {
 		if err == pgx.ErrNoRows {
@@ -110,4 +144,9 @@ func (u *userRepository) FindByUserName(username string) (*entity.User, error) {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (u *userRepository) UpdatePassword(id *int64, password string) error {
+	//TODO implement me
+	panic("implement me")
 }

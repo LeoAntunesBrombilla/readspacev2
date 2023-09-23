@@ -71,6 +71,7 @@ func main() {
 		userGroup.POST("/", userHandler.CreateUser)
 		userGroup.GET("/", userHandler.ListAllUsers)
 		userGroup.DELETE("/", userHandler.DeleteUserById)
+		userGroup.PATCH("/", userHandler.UpdateUser)
 	}
 
 	r.GET("/ping", func(c *gin.Context) {

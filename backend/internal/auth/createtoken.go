@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func CreateToken(user *entity.User) (string, error) {
+func CreateToken(user *entity.UserEntity) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": user.Username,
 		"id":       user.ID,

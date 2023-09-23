@@ -13,14 +13,22 @@ func NewUserUseCase(repo repository.UserRepository) *UserUseCase {
 	return &UserUseCase{repo: repo}
 }
 
-func (useCase *UserUseCase) CreateUser(user *entity.User) error {
+func (useCase *UserUseCase) CreateUser(user *entity.UserEntity) error {
 	return useCase.repo.Create(user)
 }
 
-func (useCase *UserUseCase) ListAllUsers() ([]*entity.User, error) {
+func (useCase *UserUseCase) ListAllUsers() ([]*entity.UserEntity, error) {
 	return useCase.repo.ListAllUsers()
 }
 
 func (useCase *UserUseCase) DeleteUserById(id *int64) error {
 	return useCase.repo.DeleteUserById(id)
+}
+
+func (useCase *UserUseCase) FindByUserName(username string) (*entity.UserEntity, error) {
+	return useCase.repo.FindByUserName(username)
+}
+
+func (useCase *UserUseCase) UpdateUser(id *int64, user *entity.UserUpdateDetails) error {
+	return useCase.repo.UpdateUser(id, user)
 }
