@@ -51,11 +51,6 @@ func (u *userRepository) Create(user *entity.UserEntity) error {
 	return nil
 }
 
-func (u *userRepository) GetByID(id int64) (*entity.UserEntity, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (u *userRepository) UpdateUser(id *int64, user *entity.UserUpdateDetails) error {
 	updateFields := []string{}
 	args := []interface{}{}
@@ -146,7 +141,31 @@ func (u *userRepository) FindByUserName(username string) (*entity.UserEntity, er
 	return &user, nil
 }
 
-func (u *userRepository) UpdatePassword(id *int64, password string) error {
-	//TODO implement me
-	panic("implement me")
+func (u *userRepository) FindPasswordById(id *int64) (*string, error) {
+	query := `SELECT password FROM users WHERE id = $1`
+	row := u.db.QueryRow(context.Background(), query, *id)
+
+	var password string
+
+	if err := row.Scan(&password); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+
+	fmt.Println("AQUI")
+	fmt.Println(password)
+	return &password, nil
+}
+
+func (u *userRepository) UpdateUserPassword(id *int64, password string) error {
+	query := `UPDATE users SET password = $1 WHERE id = $2`
+	_, err := u.db.Exec(context.Background(), query, password, id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

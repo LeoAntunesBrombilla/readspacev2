@@ -29,17 +29,21 @@ func init() {
 
 func main() {
 	db, err := database.Connect()
+
 	if err != nil {
 		log.Fatalf("Unable to establish connection: %v\n", err)
 	}
+
 	defer db.Close()
 
 	cfg := config.New()
 	ctx := context.Background()
 	addr := os.Getenv("REDIS_ADDR")
+
 	if addr == "" {
 		addr = "localhost:6379"
 	}
+
 	secretKey := os.Getenv("SECRET_KEY")
 
 	store, err := redistore.NewRediStore(10, "tcp", addr, "", []byte(secretKey))
@@ -47,7 +51,6 @@ func main() {
 		log.Fatalf("Failed to create RediStore: %v", err)
 	}
 
-	//Vamos aplicar o migrate aqui
 	if err := migration.ApplyMigrations(cfg.DatabaseConnStr); err != nil {
 		log.Fatalf("Fatal! Failed to apply migrations: %v", err)
 	}
@@ -72,6 +75,7 @@ func main() {
 		userGroup.GET("/", userHandler.ListAllUsers)
 		userGroup.DELETE("/", userHandler.DeleteUserById)
 		userGroup.PATCH("/", userHandler.UpdateUser)
+		userGroup.PATCH("/password", userHandler.UpdateUserPassword)
 	}
 
 	r.GET("/ping", func(c *gin.Context) {
@@ -79,5 +83,6 @@ func main() {
 			"message": "pong",
 		})
 	})
+
 	r.Run()
 }

@@ -32,3 +32,11 @@ func (useCase *UserUseCase) FindByUserName(username string) (*entity.UserEntity,
 func (useCase *UserUseCase) UpdateUser(id *int64, user *entity.UserUpdateDetails) error {
 	return useCase.repo.UpdateUser(id, user)
 }
+
+func (useCase *UserUseCase) UpdateUserPassword(id *int64, password string) error {
+	return useCase.repo.UpdateUserPassword(id, password)
+}
+
+func (useCase *UserUseCase) FindPasswordById(id *int64) (*string, error) {
+	return useCase.repo.FindPasswordById(id)
+}

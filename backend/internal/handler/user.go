@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"readspacev2/internal/entity"
 	"readspacev2/internal/usecase"
@@ -92,4 +93,48 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": "UserEntity updated with success"})
+}
+
+func (h *UserHandler) UpdateUserPassword(c *gin.Context) {
+
+	idStr := c.DefaultQuery("id", "0")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+
+	if err != nil || id == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID query parameter"})
+		return
+	}
+
+	var userUpdatePassword entity.UserUpdatePassword
+
+	if err := c.ShouldBindJSON(&userUpdatePassword); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	oldHashedPassword, err := h.userUseCase.FindPasswordById(&id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error finding user password"})
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(*oldHashedPassword), []byte(userUpdatePassword.OldPassword)); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid old password"})
+		return
+	}
+
+	newHashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(userUpdatePassword.NewPassword), bcrypt.DefaultCost)
+
+	if hashErr != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error hashing new password"})
+		return
+	}
+
+	if updateErr := h.userUseCase.UpdateUserPassword(&id, string(newHashedPassword)); updateErr != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating user password"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": "User password updated with success"})
 }
