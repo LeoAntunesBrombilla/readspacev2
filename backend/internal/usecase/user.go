@@ -5,6 +5,16 @@ import (
 	"readspacev2/internal/repository"
 )
 
+type UserUseCaseInterface interface {
+	CreateUser(user *entity.UserEntity) error
+	ListAllUsers() ([]*entity.UserEntity, error)
+	DeleteUserById(id *int64) error
+	FindByUserName(username string) (*entity.UserEntity, error)
+	UpdateUser(id *int64, user *entity.UserUpdateDetails) error
+	UpdateUserPassword(id *int64, password string) error
+	FindPasswordById(id *int64) (*string, error)
+}
+
 type UserUseCase struct {
 	repo repository.UserRepository
 }

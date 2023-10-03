@@ -84,5 +84,9 @@ func main() {
 		})
 	})
 
+	//TODO
+	// 1. Add CRUD for a read session
+	// 2. Add CRUD for books
+
 	r.Run()
 }
