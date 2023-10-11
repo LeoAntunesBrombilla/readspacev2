@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"readspacev2/internal/entity"
 	"readspacev2/internal/handler"
 	"readspacev2/internal/middleware"
 	"readspacev2/internal/migration"
@@ -57,7 +58,8 @@ func main() {
 
 	userRepo := postgres.NewUserRepository(db)
 	userUseCase := usecase.NewUserUseCase(userRepo)
-	userHandler := handler.NewUserHandler(userUseCase)
+	realBcryptWrapper := entity.RealBcryptWrapper{}
+	userHandler := handler.NewUserHandler(userUseCase, realBcryptWrapper)
 
 	authRepo, _ := redis.NewRedisAuthRepository(ctx)
 	authUseCase := usecase.NewAuthenticationUseCase(authRepo, userRepo)

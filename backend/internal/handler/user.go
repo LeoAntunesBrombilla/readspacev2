@@ -14,16 +14,6 @@ type BcryptWrapper interface {
 	CompareHashAndPassword(hashedPassword, password []byte) error
 }
 
-type RealBcryptWrapper struct{}
-
-func (rbw RealBcryptWrapper) GenerateFromPassword(password []byte, cost int) ([]byte, error) {
-	return bcrypt.GenerateFromPassword(password, cost)
-}
-
-func (rbw RealBcryptWrapper) CompareHashAndPassword(hashedPassword, password []byte) error {
-	return bcrypt.CompareHashAndPassword(hashedPassword, password)
-}
-
 type UserHandler struct {
 	userUseCase   usecase.UserUseCaseInterface
 	bcryptWrapper BcryptWrapper
