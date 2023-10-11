@@ -68,6 +68,7 @@ func main() {
 	r := gin.Default()
 
 	r.POST("/login", authHandler.Login)
+	r.POST("/logout", authHandler.Logout)
 
 	r.Use(middleware.AuthenticationMiddleware(store))
 
