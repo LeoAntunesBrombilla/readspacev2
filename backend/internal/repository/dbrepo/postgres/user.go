@@ -154,8 +154,6 @@ func (u *userRepository) FindPasswordById(id *int64) (*string, error) {
 		return nil, err
 	}
 
-	fmt.Println("AQUI")
-	fmt.Println(password)
 	return &password, nil
 }
 

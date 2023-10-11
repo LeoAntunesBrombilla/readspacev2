@@ -9,12 +9,31 @@ import (
 	"strconv"
 )
 
-type UserHandler struct {
-	userUseCase usecase.UserUseCaseInterface
+type BcryptWrapper interface {
+	GenerateFromPassword(password []byte, cost int) ([]byte, error)
+	CompareHashAndPassword(hashedPassword, password []byte) error
 }
 
-func NewUserHandler(userUseCase usecase.UserUseCaseInterface) *UserHandler {
-	return &UserHandler{userUseCase: userUseCase}
+type RealBcryptWrapper struct{}
+
+func (rbw RealBcryptWrapper) GenerateFromPassword(password []byte, cost int) ([]byte, error) {
+	return bcrypt.GenerateFromPassword(password, cost)
+}
+
+func (rbw RealBcryptWrapper) CompareHashAndPassword(hashedPassword, password []byte) error {
+	return bcrypt.CompareHashAndPassword(hashedPassword, password)
+}
+
+type UserHandler struct {
+	userUseCase   usecase.UserUseCaseInterface
+	bcryptWrapper BcryptWrapper
+}
+
+func NewUserHandler(userUseCase usecase.UserUseCaseInterface, bcrypt BcryptWrapper) *UserHandler {
+	return &UserHandler{
+		userUseCase:   userUseCase,
+		bcryptWrapper: bcrypt,
+	}
 }
 
 func (h *UserHandler) CreateUser(c *gin.Context) {
@@ -115,16 +134,26 @@ func (h *UserHandler) UpdateUserPassword(c *gin.Context) {
 	oldHashedPassword, err := h.userUseCase.FindPasswordById(&id)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error finding user password"})
+		if err.Error() == "user not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error finding user"})
+			return
+		}
+	}
+
+	if oldHashedPassword == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Old password not found"})
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(*oldHashedPassword), []byte(userUpdatePassword.OldPassword)); err != nil {
+	if err := h.bcryptWrapper.CompareHashAndPassword([]byte(*oldHashedPassword), []byte(userUpdatePassword.OldPassword)); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid old password"})
 		return
 	}
 
-	newHashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(userUpdatePassword.NewPassword), bcrypt.DefaultCost)
+	newHashedPassword, hashErr := h.bcryptWrapper.GenerateFromPassword([]byte(userUpdatePassword.NewPassword), bcrypt.DefaultCost)
 
 	if hashErr != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error hashing new password"})
