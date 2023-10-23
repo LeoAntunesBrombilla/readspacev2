@@ -26,6 +26,16 @@ func NewUserHandler(userUseCase usecase.UserUseCaseInterface, bcrypt BcryptWrapp
 	}
 }
 
+// CreateUser godoc
+// @Summary Create a new user
+// @Schemes
+// @Description Create a new user with the input payload
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Param user body entity.UserEntity true "User entity to add"
+// @Success 201 {string} string "Created"
+// @Router /user [post]
 func (h *UserHandler) CreateUser(c *gin.Context) {
 	var user entity.UserEntity
 

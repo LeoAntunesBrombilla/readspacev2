@@ -1,6 +1,8 @@
 package entity
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"golang.org/x/crypto/bcrypt"
+)
 
 type RealBcryptWrapper struct{}
 

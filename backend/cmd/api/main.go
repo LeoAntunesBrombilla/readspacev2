@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"readspacev2/docs"
 	"readspacev2/internal/entity"
 	"readspacev2/internal/handler"
 	"readspacev2/internal/middleware"
@@ -18,6 +19,8 @@ import (
 	"readspacev2/pkg/database"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func init() {
@@ -28,6 +31,15 @@ func init() {
 	}
 }
 
+//@title Readspace API
+//@version 1.0
+//@description This is a sample server celler server.
+
+// @host localhost:8080
+// @BasePath /api/v1
+// @securityDefinitions.api_key Bearer
+// @in header
+// @name Authorization
 func main() {
 	db, err := database.Connect()
 
@@ -70,9 +82,7 @@ func main() {
 	r.POST("/login", authHandler.Login)
 	r.POST("/logout", authHandler.Logout)
 
-	r.Use(middleware.AuthenticationMiddleware(store))
-
-	userGroup := r.Group("/user")
+	userGroup := r.Group("/user", middleware.AuthenticationMiddleware(store))
 	{
 		userGroup.POST("/", userHandler.CreateUser)
 		userGroup.GET("/", userHandler.ListAllUsers)
@@ -80,6 +90,9 @@ func main() {
 		userGroup.PATCH("/", userHandler.UpdateUser)
 		userGroup.PATCH("/password", userHandler.UpdateUserPassword)
 	}
+
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
