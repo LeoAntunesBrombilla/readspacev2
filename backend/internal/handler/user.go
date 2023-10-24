@@ -7,6 +7,7 @@ import (
 	"readspacev2/internal/entity"
 	"readspacev2/internal/usecase"
 	"strconv"
+	"time"
 )
 
 type BcryptWrapper interface {
@@ -33,20 +34,28 @@ func NewUserHandler(userUseCase usecase.UserUseCaseInterface, bcrypt BcryptWrapp
 // @Tags users
 // @Accept  json
 // @Produce  json
-// @Param user body entity.UserEntity true "User entity to add"
+// @Param user body entity.UserInput true "User entity to add"
 // @Success 201 {string} string "Created"
 // @Router /user [post]
 func (h *UserHandler) CreateUser(c *gin.Context) {
-	var user entity.UserEntity
+	var userInput entity.UserInput
 
-	err := c.ShouldBindJSON(&user)
+	err := c.ShouldBindJSON(&userInput)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
+  user := entity.UserEntity{
+    Email: userInput.Email,
+    Username: userInput.Username,
+    Password: userInput.Password,
+    CreatedAt: time.Now().UTC(),
+  }
+
 	err = h.userUseCase.CreateUser(&user)
+	//TODO melhorar tratamento de erro, caso o cliente envie um email ou username ja existente
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating user"})
 		return

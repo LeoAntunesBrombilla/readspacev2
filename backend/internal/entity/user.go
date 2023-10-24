@@ -10,6 +10,12 @@ type UserEntity struct {
 	CreatedAt time.Time
 }
 
+type UserInput struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type UserUpdateDetails struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`

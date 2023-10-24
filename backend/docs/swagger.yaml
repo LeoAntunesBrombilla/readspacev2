@@ -1,13 +1,16 @@
 basePath: /api/v1
 definitions:
-  entity.UserEntity:
+  entity.Login:
     properties:
-      createdAt:
+      password:
         type: string
+      username:
+        type: string
+    type: object
+  entity.UserInput:
+    properties:
       email:
         type: string
-      id:
-        type: integer
       password:
         type: string
       username:
@@ -20,6 +23,30 @@ info:
   title: Readspace API
   version: "1.0"
 paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate using username and password to get a token
+      parameters:
+      - description: Credentials for login
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully authenticated, token returned
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Authenticate a user and obtain a token
+      tags:
+      - authentication
   /user:
     post:
       consumes:
@@ -31,7 +58,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/entity.UserEntity'
+          $ref: '#/definitions/entity.UserInput'
       produces:
       - application/json
       responses:

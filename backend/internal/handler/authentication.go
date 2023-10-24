@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"net/http"
+	"readspacev2/internal/entity"
+	"readspacev2/internal/usecase"
+
 	"github.com/boj/redistore"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"readspacev2/internal/usecase"
 )
 
 type AuthenticationHandler struct {
@@ -19,11 +21,17 @@ func NewAuthenticationHandler(authUseCase usecase.AuthenticationUseCase, store *
 	}
 }
 
+// Login godoc
+// @Summary Authenticate a user and obtain a token
+// @Description Authenticate using username and password to get a token
+// @Tags authentication
+// @Accept  json
+// @Produce  json
+// @Param login body entity.Login true "Credentials for login"
+// @Success 200 {object} map[string]string "Successfully authenticated, token returned"
+// @Router /login [post]
 func (h *AuthenticationHandler) Login(c *gin.Context) {
-	var loginDetails struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
+  var loginDetails entity.Login;
 
 	if err := c.ShouldBindJSON(&loginDetails); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})

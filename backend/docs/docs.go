@@ -15,6 +15,43 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/login": {
+            "post": {
+                "description": "Authenticate using username and password to get a token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "Authenticate a user and obtain a token",
+                "parameters": [
+                    {
+                        "description": "Credentials for login",
+                        "name": "login",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.Login"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully authenticated, token returned",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/user": {
             "post": {
                 "description": "Create a new user with the input payload",
@@ -35,7 +72,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entity.UserEntity"
+                            "$ref": "#/definitions/entity.UserInput"
                         }
                     }
                 ],
@@ -51,17 +88,22 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "entity.UserEntity": {
+        "entity.Login": {
             "type": "object",
             "properties": {
-                "createdAt": {
+                "password": {
                     "type": "string"
                 },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.UserInput": {
+            "type": "object",
+            "properties": {
                 "email": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "password": {
                     "type": "string"

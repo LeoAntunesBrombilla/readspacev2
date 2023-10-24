@@ -79,7 +79,6 @@ func (u *userRepository) UpdateUser(id *int64, user *entity.UserUpdateDetails) e
 	_, err := u.db.Exec(context.Background(), query, args...)
 
 	if err != nil {
-		fmt.Println("AAAQUI")
 		fmt.Println(err)
 		return fmt.Errorf("error updating user: %w", err)
 	}
