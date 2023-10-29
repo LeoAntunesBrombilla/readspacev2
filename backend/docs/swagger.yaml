@@ -1,7 +1,27 @@
 basePath: /api/v1
 definitions:
+  entity.ErrorEntity:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
   entity.Login:
     properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  entity.UserEntity:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
       password:
         type: string
       username:
@@ -14,6 +34,20 @@ definitions:
       password:
         type: string
       username:
+        type: string
+    type: object
+  entity.UserUpdateDetails:
+    properties:
+      email:
+        type: string
+      username:
+        type: string
+    type: object
+  entity.UserUpdatePassword:
+    properties:
+      new_password:
+        type: string
+      old_password:
         type: string
     type: object
 host: localhost:8080
@@ -47,13 +81,111 @@ paths:
       summary: Authenticate a user and obtain a token
       tags:
       - authentication
+  /logout:
+    post:
+      description: Invalidate the user's current session, effectively logging them
+        out
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully logged out
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Log out a user and invalidate the session
+      tags:
+      - authentication
   /user:
+    delete:
+      description: Delete the user identified by the given ID
+      parameters:
+      - description: User ID to delete
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted with success
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Delete a user by ID
+      tags:
+      - users
+    get:
+      description: Retrieve a list of all users in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.UserEntity'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: List all users
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: Update the user identified by the given ID
+      parameters:
+      - description: User ID to update
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Details to update
+        in: body
+        name: details
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserUpdateDetails'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated with success
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Update a user
+      tags:
+      - users
     post:
       consumes:
       - application/json
       description: Create a new user with the input payload
       parameters:
-      - description: User entity to add
+      - description: User details for creation
         in: body
         name: user
         required: true
@@ -66,7 +198,50 @@ paths:
           description: Created
           schema:
             type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
       summary: Create a new user
+      tags:
+      - users
+  /user/password:
+    patch:
+      consumes:
+      - application/json
+      description: Update the password of the user identified by the given ID
+      parameters:
+      - description: User ID to update password
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: New password details
+        in: body
+        name: details
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserUpdatePassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User password updated with success
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Update user password
       tags:
       - users
 swagger: "2.0"

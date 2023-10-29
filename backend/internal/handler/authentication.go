@@ -60,14 +60,23 @@ func (h *AuthenticationHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
+// Logout godoc
+// @Summary Log out a user and invalidate the session
+// @Description Invalidate the user's current session, effectively logging them out
+// @Tags authentication
+// @Produce  json
+// @Success 200 {object} map[string]string "Successfully logged out"
+// @Failure 500 {object} entity.ErrorEntity
+// @Router /logout [post]
 func (h *AuthenticationHandler) Logout(c *gin.Context) {
 	session, _ := h.store.Get(c.Request, "user-session")
 	session.Options.MaxAge = -1
 	err := session.Save(c.Request, c.Writer)
 
-	if err != nil {
-		return
-	}
+  if err != nil {
+        c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Internal Server Error"})
+        return
+  }
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out"})
 }
