@@ -12,18 +12,20 @@ This project provides backend support for the ReadSpace application, supporting 
 ### Configuration:
 
 1. **Environment Variables**:
-    - At the root of the `backend` directory, create a `.env` file.
-    - Use the provided `.env.example` as a template to fill in the required environment variables.
+   - At the root of the `backend` directory, create a `.env` file.
+   - Use the provided `.env.example` as a template to fill in the required environment variables.
 
 ### Steps to Run:
 
 1. **Build the Docker containers**:
    Navigate to the directory containing the `docker-compose.yml` file and run:
+
    ```bash
    docker-compose build
    ```
 
 2. **Run the Docker containers**:
+
    ```bash
    docker-compose up
    ```
@@ -34,43 +36,47 @@ This project provides backend support for the ReadSpace application, supporting 
 
 - If you make changes to the Go code or environment variables, you will need to stop the containers, rebuild, and restart them. Use the following commands:
 
-   ```bash
-   docker-compose down
-   docker-compose build
-   docker-compose up
-   ```
+  ```bash
+  docker-compose down
+  docker-compose build
+  docker-compose up
+  ```
 
 ### Features
 
 1. **User Authentication & Management**
-    - Register a new user
-    - Authenticate and log in a user
-    - Log out a user
-    - Delete a user account
-    - Update user information
+
+   - Register a new user
+   - Authenticate and log in a user
+   - Log out a user
+   - Delete a user account
+   - Update user information
 
 2. **User Reading Sessions**
-    - Create a reading session
-    - Save a reading session
-    - Edit a reading session
-    - Delete a reading session
+
+   - Create a reading session
+   - Save a reading session
+   - Edit a reading session
+   - Delete a reading session
 
 3. **Unit Testing**
-    - Comprehensive unit tests covering all functionalities to ensure robustness and correctness.
+   - Comprehensive unit tests covering all functionalities to ensure robustness and correctness.
 
 ### Folder Structure
 
 - `cmd`: Contains the application's entry points.
-    - `api`: API initialization and routes.
-    - `main.go`: Starts up the server.
+
+  - `api`: API initialization and routes.
+  - `main.go`: Starts up the server.
 
 - `internal`: Application's internal logic.
-    - `entity`: Core domain objects or structs.
-    - `handler`: Interfaces directly with the HTTP layer.
-        - `rest`: Defines RESTful endpoints.
-    - `repository`: Abstractions over data storage.
-        - `dbrepo/postgres`: Implementation for PostgreSQL database.
-    - `useCase`: Contains business logic.
+
+  - `entity`: Core domain objects or structs.
+  - `handler`: Interfaces directly with the HTTP layer.
+    - `rest`: Defines RESTful endpoints.
+  - `repository`: Abstractions over data storage.
+    - `dbrepo/postgres`: Implementation for PostgreSQL database.
+  - `useCase`: Contains business logic.
 
 - `pkg`: Libraries or code intended to be used by other services or applications.
 
@@ -93,11 +99,19 @@ This project provides backend support for the ReadSpace application, supporting 
 - `PUT /session/{sessionID}`: Edit a specific reading session.
 - `DELETE /session/{sessionID}`: Delete a specific reading session.
 
+### TODO
+
+- Book crud, get books,
+- Create a book shelf for the user
+- Reading session
+- History of user reading session and focus
+
 ### Testing
 
 The project's test coverage aims to be comprehensive, covering all application functionalities:
 
 1. **Running Tests**:
+
    ```bash
    go test ./...
    ```
