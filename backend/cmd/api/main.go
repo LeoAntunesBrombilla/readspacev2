@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/boj/redistore"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
@@ -14,9 +12,13 @@ import (
 	"readspacev2/internal/migration"
 	"readspacev2/internal/repository/dbrepo/postgres"
 	"readspacev2/internal/repository/dbrepo/redis"
+	"readspacev2/internal/repository/external"
 	"readspacev2/internal/usecase"
 	"readspacev2/pkg/config"
 	"readspacev2/pkg/database"
+
+	"github.com/boj/redistore"
+	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -77,6 +79,10 @@ func main() {
 	authUseCase := usecase.NewAuthenticationUseCase(authRepo, userRepo)
 	authHandler := handler.NewAuthenticationHandler(authUseCase, store)
 
+	externalBookServiceRepo := external.NewExternalBookRepository()
+	externalBookServiceUseCase := usecase.NewExternalBookServiceUseCase(externalBookServiceRepo)
+	externalBookServiceHandler := handler.NewExternalBookServiceHandler(externalBookServiceUseCase)
+
 	r := gin.Default()
 
 	r.POST("/login", authHandler.Login)
@@ -89,6 +95,11 @@ func main() {
 		userGroup.DELETE("/", userHandler.DeleteUserById)
 		userGroup.PATCH("/", userHandler.UpdateUser)
 		userGroup.PATCH("/password", userHandler.UpdateUserPassword)
+	}
+
+	externalBookServiceGroup := r.Group("/searchBook", middleware.AuthenticationMiddleware(store))
+	{
+		externalBookServiceGroup.GET("/", externalBookServiceHandler.SearchBooks)
 	}
 
 	docs.SwaggerInfo.BasePath = ""
