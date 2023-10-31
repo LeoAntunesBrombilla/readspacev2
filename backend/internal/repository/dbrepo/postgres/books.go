@@ -16,7 +16,6 @@ func NewBooksRepository(db *pgxpool.Pool) repository.BooksRepository {
 }
 
 func (b booksRepository) AddBookToList(ctx context.Context, externalBook entity.ExternalBook, bookListId string) error {
-	//TODO implement me
 	panic("implement me")
 }
 

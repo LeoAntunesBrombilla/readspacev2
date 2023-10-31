@@ -114,6 +114,7 @@ func main() {
 	//TODO
 	// 1. Add CRUD for a read session
 	// 2. Add CRUD for books
+	// 3. Add userMe endpoint
 	// 3. Add documentation
 
 	r.Run()
