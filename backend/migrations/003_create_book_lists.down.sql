@@ -1,1 +1,2 @@
-DROP TABLE book_lists;
+DROP TABLE IF EXISTS book_list_books CASCADE;
+DROP TABLE IF EXISTS book_lists CASCADE;

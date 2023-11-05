@@ -43,22 +43,22 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&userInput)
 
-if err != nil {
-        c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Bad Request"})
-        return
-    }
+	if err != nil {
+		c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Bad Request"})
+		return
+	}
 
-  user := entity.UserEntity{
-    Email: userInput.Email,
-    Username: userInput.Username,
-    Password: userInput.Password,
-    CreatedAt: time.Now().UTC(),
-  }
+	user := entity.UserEntity{
+		Email:     userInput.Email,
+		Username:  userInput.Username,
+		Password:  userInput.Password,
+		CreatedAt: time.Now().UTC(),
+	}
 
 	err = h.userUseCase.CreateUser(&user)
 	//TODO melhorar tratamento de erro, caso o cliente envie um email ou username ja existente
 	if err != nil {
-    c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error creating user"})
+		c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error creating user"})
 		return
 	}
 
@@ -77,7 +77,7 @@ func (h *UserHandler) ListAllUsers(c *gin.Context) {
 
 	users, err := h.userUseCase.ListAllUsers()
 	if err != nil {
-    c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error returning list of users"})
+		c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error returning list of users"})
 		return
 	}
 
@@ -101,16 +101,16 @@ func (h *UserHandler) DeleteUserById(c *gin.Context) {
 	id, err := strconv.ParseInt(idStr, 10, 64)
 
 	if err != nil || id == 0 {
-    c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid ID query parameter"})
+		c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid ID query parameter"})
 		return
 	}
 
 	err = h.userUseCase.DeleteUserById(&id)
 
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Internal Server Error"})
-        return
-    }
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Internal Server Error"})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"success": "User deleted with success"})
 }
@@ -134,23 +134,23 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	id, err := strconv.ParseInt(idStr, 10, 64)
 
 	if err != nil || id == 0 {
-    c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid ID query parameter"})
+		c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid ID query parameter"})
 		return
 	}
 
 	var userUpdateDetails entity.UserUpdateDetails
 
 	if err := c.ShouldBindJSON(&userUpdateDetails); err != nil {
-    c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid payload"})
+		c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid payload"})
 		return
 	}
 
 	err = h.userUseCase.UpdateUser(&id, &userUpdateDetails)
 
-if err != nil {
-        c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error updating user"})
-        return
-    }
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error updating user"})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"success": "User updated with success"})
 }
@@ -173,14 +173,14 @@ func (h *UserHandler) UpdateUserPassword(c *gin.Context) {
 	id, err := strconv.ParseInt(idStr, 10, 64)
 
 	if err != nil || id == 0 {
-    c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid ID query parameter"})
+		c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid ID query parameter"})
 		return
 	}
 
 	var userUpdatePassword entity.UserUpdatePassword
 
 	if err := c.ShouldBindJSON(&userUpdatePassword); err != nil {
-    c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid request payload"})
+		c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid request payload"})
 		return
 	}
 
@@ -188,33 +188,33 @@ func (h *UserHandler) UpdateUserPassword(c *gin.Context) {
 
 	if err != nil {
 		if err.Error() == "user not found" {
-      c.JSON(http.StatusNotFound, entity.ErrorEntity{Code: 404,Message: "User not found"})
+			c.JSON(http.StatusNotFound, entity.ErrorEntity{Code: 404, Message: "User not found"})
 			return
 		} else {
-      c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error finding user"})
+			c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error finding user"})
 			return
 		}
 	}
 
 	if oldHashedPassword == nil {
-    c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Old password not found"})
+		c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Old password not found"})
 		return
 	}
 
 	if err := h.bcryptWrapper.CompareHashAndPassword([]byte(*oldHashedPassword), []byte(userUpdatePassword.OldPassword)); err != nil {
-    c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid old password"})
+		c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid old password"})
 		return
 	}
 
 	newHashedPassword, hashErr := h.bcryptWrapper.GenerateFromPassword([]byte(userUpdatePassword.NewPassword), bcrypt.DefaultCost)
 
 	if hashErr != nil {
-    c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error hashing new password"})
+		c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error hashing new password"})
 		return
 	}
 
 	if updateErr := h.userUseCase.UpdateUserPassword(&id, string(newHashedPassword)); updateErr != nil {
-    c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error updating user password"})
+		c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error updating user password"})
 		return
 	}
 

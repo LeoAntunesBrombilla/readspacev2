@@ -83,6 +83,10 @@ func main() {
 	externalBookServiceUseCase := usecase.NewExternalBookServiceUseCase(externalBookServiceRepo)
 	externalBookServiceHandler := handler.NewExternalBookServiceHandler(externalBookServiceUseCase)
 
+	bookListRepo := postgres.NewBookListRepository(db)
+	bookListUseCase := usecase.NewBookListUseCase(bookListRepo)
+	bookListHandler := handler.NewBookListHandler(bookListUseCase)
+
 	r := gin.Default()
 
 	r.POST("/login", authHandler.Login)
@@ -90,11 +94,18 @@ func main() {
 
 	userGroup := r.Group("/user", middleware.AuthenticationMiddleware(store))
 	{
-		userGroup.POST("/", userHandler.CreateUser)
 		userGroup.GET("/", userHandler.ListAllUsers)
 		userGroup.DELETE("/", userHandler.DeleteUserById)
 		userGroup.PATCH("/", userHandler.UpdateUser)
 		userGroup.PATCH("/password", userHandler.UpdateUserPassword)
+	}
+
+	r.POST("/user", userHandler.CreateUser)
+
+	bookListGroup := r.Group("/bookList", middleware.AuthenticationMiddleware(store))
+	{
+		bookListGroup.POST("/", bookListHandler.Create)
+		bookListGroup.GET("/", bookListHandler.ListAllBookLists)
 	}
 
 	externalBookServiceGroup := r.Group("/searchBook", middleware.AuthenticationMiddleware(store))
