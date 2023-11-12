@@ -2,14 +2,17 @@ package postgres
 
 import (
 	"context"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"readspacev2/internal/entity"
 	"readspacev2/internal/repository"
-
-	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type bookListRepository struct {
 	db *pgxpool.Pool
+}
+
+func NewBookListRepository(db *pgxpool.Pool) repository.BookListRepository {
+	return &bookListRepository{db: db}
 }
 
 func (b *bookListRepository) UpdateBookList(id *int64, bookList *entity.BookListDetails) error {
@@ -55,10 +58,6 @@ func (b *bookListRepository) ListAllBookLists() ([]*entity.BookList, error) {
 func (b *bookListRepository) FindBookListByName(name string) (*entity.BookList, error) {
 	//TODO implement me
 	panic("implement me")
-}
-
-func NewBookListRepository(db *pgxpool.Pool) repository.BookListRepository {
-	return &bookListRepository{db: db}
 }
 
 func (b *bookListRepository) Create(bookList *entity.BookList) error {
