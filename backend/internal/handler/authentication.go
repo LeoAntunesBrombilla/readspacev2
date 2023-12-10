@@ -31,7 +31,7 @@ func NewAuthenticationHandler(authUseCase usecase.AuthenticationUseCase, store *
 // @Success 200 {object} map[string]string "Successfully authenticated, token returned"
 // @Router /login [post]
 func (h *AuthenticationHandler) Login(c *gin.Context) {
-  var loginDetails entity.Login;
+	var loginDetails entity.Login
 
 	if err := c.ShouldBindJSON(&loginDetails); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
@@ -73,10 +73,11 @@ func (h *AuthenticationHandler) Logout(c *gin.Context) {
 	session.Options.MaxAge = -1
 	err := session.Save(c.Request, c.Writer)
 
-  if err != nil {
-        c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Internal Server Error"})
-        return
-  }
+	//TODO fix this
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Internal Server Error"})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out"})
 }

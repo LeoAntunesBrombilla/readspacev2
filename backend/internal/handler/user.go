@@ -113,6 +113,7 @@ func (h *UserHandler) DeleteUserById(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": "User deleted with success"})
+	return
 }
 
 // UpdateUser godoc

@@ -7,5 +7,4 @@ type BookListRepository interface {
 	UpdateBookList(id *int64, bookList *entity.BookListDetails) error
 	DeleteBookListById(id *int64) error
 	ListAllBookLists() ([]*entity.BookList, error)
-	FindBookListByName(name string) (*entity.BookList, error)
 }

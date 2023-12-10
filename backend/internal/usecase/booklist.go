@@ -10,7 +10,6 @@ type BookListUseCaseInterface interface {
 	UpdateBookList(id *int64, bookList *entity.BookListDetails) error
 	DeleteBookListById(id *int64) error
 	ListAllBookLists() ([]*entity.BookList, error)
-	FindBookListByName(name string) (*entity.BookList, error)
 }
 
 type BookListUseCase struct {
@@ -35,8 +34,4 @@ func (useCase *BookListUseCase) DeleteBookListById(id *int64) error {
 
 func (useCase *BookListUseCase) ListAllBookLists() ([]*entity.BookList, error) {
 	return useCase.repo.ListAllBookLists()
-}
-
-func (useCase *BookListUseCase) FindBookListByName(name string) (*entity.BookList, error) {
-	return useCase.repo.FindBookListByName(name)
 }

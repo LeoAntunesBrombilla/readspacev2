@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"readspacev2/internal/entity"
 	"readspacev2/internal/repository"
@@ -21,8 +22,15 @@ func (b *bookListRepository) UpdateBookList(id *int64, bookList *entity.BookList
 }
 
 func (b *bookListRepository) DeleteBookListById(id *int64) error {
-	//TODO implement me
-	panic("implement me")
+	query := `DELETE FROM book_lists WHERE id = $1`
+
+	_, err := b.db.Exec(context.Background(), query, id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (b *bookListRepository) ListAllBookLists() ([]*entity.BookList, error) {
@@ -41,23 +49,21 @@ func (b *bookListRepository) ListAllBookLists() ([]*entity.BookList, error) {
 	for rows.Next() {
 		var bookList entity.BookList
 
-		if err := rows.Scan(&bookList.ID, bookList.UserID, bookList.Name, bookList.CreatedAt, bookList.UpdatedAt); err != nil {
+		err = rows.Scan(&bookList.ID, &bookList.UserID, &bookList.Name, &bookList.CreatedAt, &bookList.UpdatedAt)
+		if err != nil {
 			return nil, err
 		}
 
 		bookLists = append(bookLists, &bookList)
 	}
 
-	if err := rows.Err(); err != nil {
+	if err = rows.Err(); err != nil {
+
+		fmt.Println(err)
 		return nil, err
 	}
 
 	return bookLists, nil
-}
-
-func (b *bookListRepository) FindBookListByName(name string) (*entity.BookList, error) {
-	//TODO implement me
-	panic("implement me")
 }
 
 func (b *bookListRepository) Create(bookList *entity.BookList) error {
