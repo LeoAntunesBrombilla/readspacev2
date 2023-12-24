@@ -28,7 +28,6 @@ func (u *userRepository) Create(user *entity.UserEntity) error {
 		return err // handle the error appropriately
 	}
 
-	// Aqui a query e preparada para inserir os dados do usuarios
 	query := `INSERT INTO users (email, username, password, created_at) VALUES ($1, $2, $3, $4) RETURNING id`
 
 	conn, err := u.db.Acquire(context.Background())
@@ -37,11 +36,8 @@ func (u *userRepository) Create(user *entity.UserEntity) error {
 		return err
 	}
 
-	// Ele vai ser executado logo apos essa funcao retornar
-	// garantindo que fechamos a conexao
 	defer conn.Release()
 
-	// Executamos a query
 	row := conn.QueryRow(context.Background(), query, user.Email, user.Username, string(hashedPassword), user.CreatedAt)
 	err = row.Scan(&user.ID)
 	if err != nil {

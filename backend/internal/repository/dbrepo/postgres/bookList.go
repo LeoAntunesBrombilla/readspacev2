@@ -17,8 +17,15 @@ func NewBookListRepository(db *pgxpool.Pool) repository.BookListRepository {
 }
 
 func (b *bookListRepository) UpdateBookList(id *int64, bookList *entity.BookListDetails) error {
-	//TODO implement me
-	panic("implement me")
+	query := `UPDATE book_lists SET name = $1 WHERE id = $2`
+	_, err := b.db.Exec(context.Background(), query, bookList.Name, id)
+
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("error updating user: %w", err)
+	}
+
+	return nil
 }
 
 func (b *bookListRepository) DeleteBookListById(id *int64) error {

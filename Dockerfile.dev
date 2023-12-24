@@ -1,0 +1,26 @@
+# Start from the latest Golang base image
+FROM golang:latest
+
+# Set the Current Working Directory inside the container
+WORKDIR /backend
+
+# Copy go.mod and go.sum files
+COPY ./backend/go.mod ./backend/go.sum ./
+
+# Install air for live reloading
+RUN go install github.com/cosmtrek/air@latest
+
+# Download all dependencies
+RUN go mod download
+
+# Copy the source from the backend directory to the Working Directory inside the container
+COPY ./backend .
+
+# Build the Go app, adjust the path to your main package
+RUN go build -o ./tmp/main ./cmd/api
+
+# Expose port 8080 to the outside world
+EXPOSE 8080
+
+# Command to run the Air tool
+CMD ["air"]

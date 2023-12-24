@@ -107,6 +107,7 @@ func main() {
 		bookListGroup.POST("/", bookListHandler.Create)
 		bookListGroup.GET("/", bookListHandler.ListAllBookLists)
 		bookListGroup.DELETE("/", bookListHandler.DeleteBookListById)
+		bookListGroup.PATCH("/", bookListHandler.UpdateBookList)
 	}
 
 	externalBookServiceGroup := r.Group("/searchBook", middleware.AuthenticationMiddleware(store))

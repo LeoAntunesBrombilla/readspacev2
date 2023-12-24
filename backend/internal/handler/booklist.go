@@ -18,6 +18,17 @@ func NewBookListHandler(bookListUseCase usecase.BookListUseCaseInterface) *BookL
 	return &BookListHandler{bookListUseCase: bookListUseCase}
 }
 
+// Create godoc
+// @Summary Create a new bookList
+// @Description Create a new bookList with the input payload
+// @Tags bookList
+// @Accept  json
+// @Produce  json
+// @Param user body entity.BookListInput true "BookList input for creation"
+// @Success 201 {string} string "Created"
+// @Failure 400 {object} entity.ErrorEntity
+// @Failure 500 {object} entity.ErrorEntity
+// @Router /bookList [post]
 func (h *BookListHandler) Create(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
@@ -56,6 +67,14 @@ func (h *BookListHandler) Create(c *gin.Context) {
 	return
 }
 
+// ListAllBookLists godoc
+// @Summary List all bookList
+// @Description Retrieve a list of all bookLists in the database
+// @Tags bookLists
+// @Produce  json
+// @Success 200 {array} entity.UserEntity
+// @Failure 500 {object} entity.ErrorEntity
+// @Router /bookList [get]
 func (h *BookListHandler) ListAllBookLists(c *gin.Context) {
 	bookLists, err := h.bookListUseCase.ListAllBookLists()
 
@@ -98,4 +117,32 @@ func (h *BookListHandler) DeleteBookListById(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"success": "Book List deleted with success"})
 	return
+}
+
+func (h *BookListHandler) UpdateBookList(c *gin.Context) {
+	var id int64
+
+	idStr := c.DefaultQuery("id", "0")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+
+	if err != nil || id == 0 {
+		c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid ID query parameter"})
+		return
+	}
+
+	var bookListUpdateDetails entity.BookListDetails
+
+	if err = c.ShouldBindJSON(&bookListUpdateDetails); err != nil {
+		c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid Payload"})
+		return
+	}
+
+	err = h.bookListUseCase.UpdateBookList(&id, &bookListUpdateDetails)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error updating bookList"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": "BookList updated with success"})
 }

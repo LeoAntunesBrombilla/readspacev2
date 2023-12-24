@@ -141,7 +141,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 
 	var userUpdateDetails entity.UserUpdateDetails
 
-	if err := c.ShouldBindJSON(&userUpdateDetails); err != nil {
+	if err = c.ShouldBindJSON(&userUpdateDetails); err != nil {
 		c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Invalid payload"})
 		return
 	}

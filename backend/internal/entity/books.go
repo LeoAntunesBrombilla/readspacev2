@@ -35,6 +35,5 @@ type BookListInput struct {
 }
 
 type BookListDetails struct {
-	Name  string         `json:"name" db:"name"`
-	Books []ExternalBook `json:"books"`
+	Name string `json:"name" db:"name"`
 }
