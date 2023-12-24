@@ -1,5 +1,5 @@
 # Start from the latest Golang base image
-FROM golang:latest
+FROM golang:latest AS debug-env
 
 # Set the Current Working Directory inside the container
 WORKDIR /backend
@@ -7,20 +7,24 @@ WORKDIR /backend
 # Copy go.mod and go.sum files
 COPY ./backend/go.mod ./backend/go.sum ./
 
-# Install air for live reloading
-RUN go install github.com/cosmtrek/air@latest
-
 # Download all dependencies
 RUN go mod download
 
 # Copy the source from the backend directory to the Working Directory inside the container
 COPY ./backend .
 
-# Build the Go app, adjust the path to your main package
-RUN go build -o ./tmp/main ./cmd/api
+# Install Delve for debugging
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
-# Expose port 8080 to the outside world
-EXPOSE 8080
+# Build the Go app with flags necessary for Delve debugging
+RUN go build -gcflags="all=-N -l" -o ./tmp/main ./cmd/api
 
-# Command to run the Air tool
-CMD ["air"]
+# Expose port 8080 for the application and another for Delve (e.g., 40000)
+EXPOSE 8080 40000
+
+# Set entry point to Delve
+ENTRYPOINT ["/go/bin/dlv"]
+
+# Default command runs the server in headless mode, listening for debugger connections
+CMD ["--listen=:40000", "--headless=true", "--api-version=2", "--accept-multiclient", "exec", "./tmp/main"]
+
