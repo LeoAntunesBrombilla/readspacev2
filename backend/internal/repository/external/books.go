@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"readspacev2/internal/entity"
 	"readspacev2/internal/repository"
@@ -18,14 +19,16 @@ func NewExternalBookRepository() repository.ExternalBookRepository {
 	return &externalBookRepository{}
 }
 
-func (repo *externalBookRepository) SearchBooks(ctx context.Context, queryParam string, pagination int) ([]entity.ExternalBook, error) {
+func (repo *externalBookRepository) SearchBooks(ctx context.Context, q string, pagination int) ([]entity.ExternalBookResponse, error) {
 	client := &http.Client{
-		Timeout: 5 * time.Second,
+		Timeout: 1 * time.Second,
 	}
 
 	apiKey := os.Getenv("GOOGLE_API_KEY")
 
-	url := fmt.Sprintf("https://www.googleapis.com/books/v1/volumes?q=%s&key=%s", queryParam, apiKey)
+	encodedQuery := url.QueryEscape(q)
+
+	url := fmt.Sprintf("https://www.googleapis.com/books/v1/volumes?q=%s&key=%s", encodedQuery, apiKey)
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 
@@ -63,12 +66,12 @@ func (repo *externalBookRepository) SearchBooks(ctx context.Context, queryParam 
 		return nil, fmt.Errorf("items not found in jsonResponse")
 	}
 
-	var books []entity.ExternalBook
+	var books []entity.ExternalBookResponse
 
 	for _, item := range items {
 		volumeInfo := item.(map[string]interface{})["volumeInfo"].(map[string]interface{})
 
-		var book entity.ExternalBook
+		var book entity.ExternalBookResponse
 		if err := json.Unmarshal(jsonify(volumeInfo), &book); err != nil {
 			return nil, err
 		}

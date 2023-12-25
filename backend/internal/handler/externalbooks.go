@@ -18,7 +18,7 @@ func NewExternalBookServiceHandler(externalBookServiceUseCase usecase.ExternalBo
 }
 
 func (h *ExternalBookServiceHandler) SearchBooks(c *gin.Context) {
-	query := c.DefaultQuery("query", "")
+	query := c.DefaultQuery("q", "")
 
 	if query == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Query parameter is missing"})

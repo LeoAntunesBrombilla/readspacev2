@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"readspacev2/internal/entity"
@@ -44,7 +45,8 @@ func (h *BooksHandler) Create(c *gin.Context) {
 	err = h.booksUseCase.Create(c, &book)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error creating user"})
+		fmt.Print(err)
+		c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Error creating book"})
 		return
 	}
 

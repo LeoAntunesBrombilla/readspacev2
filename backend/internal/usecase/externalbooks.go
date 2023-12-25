@@ -7,7 +7,7 @@ import (
 )
 
 type ExternalBookServiceUseCaseInterface interface {
-	SearchBooks(ctx context.Context, queryParam string, pagination int) ([]entity.ExternalBook, error)
+	SearchBooks(ctx context.Context, queryParam string, pagination int) ([]entity.ExternalBookResponse, error)
 }
 
 type ExternalBookServiceUseCase struct {
@@ -18,6 +18,6 @@ func NewExternalBookServiceUseCase(repo repository.ExternalBookRepository) *Exte
 	return &ExternalBookServiceUseCase{repo: repo}
 }
 
-func (useCase *ExternalBookServiceUseCase) SearchBooks(ctx context.Context, queryParam string, pagination int) ([]entity.ExternalBook, error) {
+func (useCase *ExternalBookServiceUseCase) SearchBooks(ctx context.Context, queryParam string, pagination int) ([]entity.ExternalBookResponse, error) {
 	return useCase.repo.SearchBooks(ctx, queryParam, pagination)
 }
