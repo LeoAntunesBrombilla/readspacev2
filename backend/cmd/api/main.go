@@ -87,6 +87,10 @@ func main() {
 	bookListUseCase := usecase.NewBookListUseCase(bookListRepo)
 	bookListHandler := handler.NewBookListHandler(bookListUseCase)
 
+	booksRepo := postgres.NewBooksRepository(db)
+	booksUseCase := usecase.NewBooksUseCase(booksRepo)
+	booksHandler := handler.NewBooksHandler(booksUseCase)
+
 	r := gin.Default()
 
 	r.POST("/login", authHandler.Login)
@@ -108,6 +112,11 @@ func main() {
 		bookListGroup.GET("/", bookListHandler.ListAllBookLists)
 		bookListGroup.DELETE("/", bookListHandler.DeleteBookListById)
 		bookListGroup.PATCH("/", bookListHandler.UpdateBookList)
+	}
+
+	bookGroup := r.Group("/book", middleware.AuthenticationMiddleware(store))
+	{
+		bookGroup.POST("/", booksHandler.Create)
 	}
 
 	externalBookServiceGroup := r.Group("/searchBook", middleware.AuthenticationMiddleware(store))

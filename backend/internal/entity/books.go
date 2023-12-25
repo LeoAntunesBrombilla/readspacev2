@@ -8,6 +8,7 @@ type ImageLinks struct {
 }
 
 type ExternalBook struct {
+	BookListID  int64    `json:"bookListId"`
 	Title       string   `json:"title"`
 	Subtitle    string   `json:"subtitle"`
 	Authors     []string `json:"authors"`
@@ -20,6 +21,23 @@ type ExternalBook struct {
 		SmallThumbnail string `json:"smallThumbnail"`
 		Thumbnail      string `json:"thumbnail"`
 	} `json:"imageLinks"`
+}
+
+type Book struct {
+	ID          int64
+	BookListID  int64
+	Title       string
+	Subtitle    string
+	Authors     []string
+	Publisher   string
+	Description string
+	PageCount   int
+	Categories  []string
+	Language    string
+	ImageLinks  struct {
+		SmallThumbnail string
+		Thumbnail      string
+	}
 }
 
 type BookList struct {
