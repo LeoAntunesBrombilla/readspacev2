@@ -2,8 +2,11 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
+	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"log"
 	"readspacev2/internal/entity"
 	"readspacev2/internal/repository"
 )
@@ -40,33 +43,105 @@ func (b *bookListRepository) DeleteBookListById(id *int64) error {
 	return nil
 }
 
+func convertTextArrayToStringSlice(textArray pgtype.TextArray) []string {
+	if textArray.Status != pgtype.Present {
+		return nil
+	}
+
+	result := make([]string, len(textArray.Elements))
+	for i, elem := range textArray.Elements {
+		if elem.Status == pgtype.Present {
+			result[i] = elem.String
+		}
+	}
+	return result
+}
+
 func (b *bookListRepository) ListAllBookLists() ([]*entity.BookList, error) {
-	query := `SELECT id, user_id, name, created_at, updated_at FROM book_lists`
+
+	query := `
+    SELECT bl.id, bl.user_id, bl.name, bl.created_at, bl.updated_at,
+           b.id, b.title, b.subtitle, b.authors, b.publisher, b.description, 
+           b.page_count, b.categories, b.language, b.small_thumbnail, b.thumbnail
+    FROM book_lists bl
+    LEFT JOIN book_list_books blb ON bl.id = blb.list_id
+    LEFT JOIN books b ON blb.book_id = b.id
+    `
 
 	rows, err := b.db.Query(context.Background(), query)
 
 	if err != nil {
+		log.Fatal(err)
 		return nil, err
 	}
-
 	defer rows.Close()
 
 	var bookLists []*entity.BookList
+	bookListMap := make(map[int64]*entity.BookList)
 
 	for rows.Next() {
 		var bookList entity.BookList
+		var book entity.Book
+		var bookID sql.NullInt64
 
-		err = rows.Scan(&bookList.ID, &bookList.UserID, &bookList.Name, &bookList.CreatedAt, &bookList.UpdatedAt)
+		var title, subtitle, publisher, description, language, smallThumbnail, thumbnail sql.NullString
+		var authorsArray, categoriesArray pgtype.TextArray
+		var pageCount sql.NullInt64
+
+		err = rows.Scan(
+			&bookList.ID, &bookList.UserID, &bookList.Name,
+			&bookList.CreatedAt, &bookList.UpdatedAt,
+			&bookID, &title, &subtitle, &authorsArray,
+			&publisher, &description, &pageCount,
+			&categoriesArray, &language,
+			&smallThumbnail, &thumbnail,
+		)
+
 		if err != nil {
+			log.Fatal(err)
 			return nil, err
 		}
 
-		bookLists = append(bookLists, &bookList)
+		existingBookList, exists := bookListMap[bookList.ID]
+		if !exists {
+			bookList.Books = []*entity.Book{}
+			existingBookList = &bookList
+			bookListMap[bookList.ID] = existingBookList
+			bookLists = append(bookLists, existingBookList)
+		}
+
+		if bookID.Valid {
+			book.ID = bookID.Int64
+			book.Title = title.String
+			existingBookList.Books = append(existingBookList.Books, &book)
+			if subtitle.Valid {
+				book.Subtitle = subtitle.String
+			}
+			book.Authors = convertTextArrayToStringSlice(authorsArray)
+			book.Categories = convertTextArrayToStringSlice(categoriesArray)
+			if publisher.Valid {
+				book.Publisher = publisher.String
+			}
+			if description.Valid {
+				book.Description = description.String
+			}
+			if pageCount.Valid {
+				book.PageCount = int(pageCount.Int64)
+			}
+			if language.Valid {
+				book.Language = language.String
+			}
+			if smallThumbnail.Valid {
+				book.ImageLinks.SmallThumbnail = smallThumbnail.String
+			}
+			if thumbnail.Valid {
+				book.ImageLinks.Thumbnail = thumbnail.String
+			}
+		}
 	}
 
 	if err = rows.Err(); err != nil {
-
-		fmt.Println(err)
+		log.Fatal(err)
 		return nil, err
 	}
 
@@ -95,3 +170,5 @@ func (b *bookListRepository) Create(bookList *entity.BookList) error {
 
 	return nil
 }
+
+//TODO create GET bookList
