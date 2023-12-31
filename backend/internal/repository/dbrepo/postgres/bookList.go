@@ -61,7 +61,7 @@ func (b *bookListRepository) ListAllBookLists() ([]*entity.BookList, error) {
 
 	query := `
     SELECT bl.id, bl.user_id, bl.name, bl.created_at, bl.updated_at,
-           b.id, b.title, b.subtitle, b.authors, b.publisher, b.description, 
+           b.id AS book_id, blb.list_id AS book_list_id, b.googleBookId, b.title, b.subtitle, b.authors, b.publisher, b.description, 
            b.page_count, b.categories, b.language, b.small_thumbnail, b.thumbnail
     FROM book_lists bl
     LEFT JOIN book_list_books blb ON bl.id = blb.list_id
@@ -83,15 +83,16 @@ func (b *bookListRepository) ListAllBookLists() ([]*entity.BookList, error) {
 		var bookList entity.BookList
 		var book entity.Book
 		var bookID sql.NullInt64
+		var bookListId sql.NullInt64
 
-		var title, subtitle, publisher, description, language, smallThumbnail, thumbnail sql.NullString
+		var googleBookId, title, subtitle, publisher, description, language, smallThumbnail, thumbnail sql.NullString
 		var authorsArray, categoriesArray pgtype.TextArray
 		var pageCount sql.NullInt64
 
 		err = rows.Scan(
 			&bookList.ID, &bookList.UserID, &bookList.Name,
 			&bookList.CreatedAt, &bookList.UpdatedAt,
-			&bookID, &title, &subtitle, &authorsArray,
+			&bookID, &bookListId, &googleBookId, &title, &subtitle, &authorsArray,
 			&publisher, &description, &pageCount,
 			&categoriesArray, &language,
 			&smallThumbnail, &thumbnail,
@@ -112,13 +113,15 @@ func (b *bookListRepository) ListAllBookLists() ([]*entity.BookList, error) {
 
 		if bookID.Valid {
 			book.ID = bookID.Int64
+			book.BookListID = bookListId.Int64
 			book.Title = title.String
+			book.GoogleBookId = googleBookId.String
+			book.Authors = convertTextArrayToStringSlice(authorsArray)
+			book.Categories = convertTextArrayToStringSlice(categoriesArray)
 			existingBookList.Books = append(existingBookList.Books, &book)
 			if subtitle.Valid {
 				book.Subtitle = subtitle.String
 			}
-			book.Authors = convertTextArrayToStringSlice(authorsArray)
-			book.Categories = convertTextArrayToStringSlice(categoriesArray)
 			if publisher.Valid {
 				book.Publisher = publisher.String
 			}
@@ -170,5 +173,3 @@ func (b *bookListRepository) Create(bookList *entity.BookList) error {
 
 	return nil
 }
-
-//TODO create GET bookList

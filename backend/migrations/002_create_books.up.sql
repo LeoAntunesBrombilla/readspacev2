@@ -1,5 +1,6 @@
 CREATE TABLE books (
     id SERIAL PRIMARY KEY,
+    googleBookId VARCHAR(255) NOT NULL,
     title VARCHAR(255) NOT NULL,
     subtitle VARCHAR(255),
     authors TEXT[],

@@ -7,5 +7,5 @@ import (
 
 type BooksUseCaseInterface interface {
 	Create(ctx context.Context, book *entity.Book) error
-	Delete(id *int64) error
+	Delete(c context.Context, bookListId *int64, bookId *int64) error
 }

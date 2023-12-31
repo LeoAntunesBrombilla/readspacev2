@@ -27,15 +27,16 @@ func (h *BooksHandler) Create(c *gin.Context) {
 	}
 
 	book := entity.Book{
-		BookListID:  bookInput.BookListID,
-		Title:       bookInput.Title,
-		Subtitle:    bookInput.Subtitle,
-		Authors:     bookInput.Authors,
-		Publisher:   bookInput.Publisher,
-		Description: bookInput.Description,
-		PageCount:   bookInput.PageCount,
-		Categories:  bookInput.Categories,
-		Language:    bookInput.Language,
+		BookListID:   bookInput.BookListID,
+		GoogleBookId: bookInput.GoogleBookId,
+		Title:        bookInput.Title,
+		Subtitle:     bookInput.Subtitle,
+		Authors:      bookInput.Authors,
+		Publisher:    bookInput.Publisher,
+		Description:  bookInput.Description,
+		PageCount:    bookInput.PageCount,
+		Categories:   bookInput.Categories,
+		Language:     bookInput.Language,
 		ImageLinks: struct {
 			SmallThumbnail string
 			Thumbnail      string
@@ -51,4 +52,25 @@ func (h *BooksHandler) Create(c *gin.Context) {
 	}
 
 	c.Status(http.StatusCreated)
+}
+
+func (h *BooksHandler) Delete(c *gin.Context) {
+	var deleteBook entity.DeleteBookInput
+
+	err := c.ShouldBindJSON(&deleteBook)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Bad Request"})
+		return
+	}
+
+	err = h.booksUseCase.Delete(c, &deleteBook.BookListID, &deleteBook.BookID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, entity.ErrorEntity{Code: 500, Message: "Internal Server Error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": "Book deleted with success"})
+	return
 }

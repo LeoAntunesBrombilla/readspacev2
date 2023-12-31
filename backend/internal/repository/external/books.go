@@ -69,11 +69,22 @@ func (repo *externalBookRepository) SearchBooks(ctx context.Context, q string, p
 	var books []entity.ExternalBookResponse
 
 	for _, item := range items {
-		volumeInfo := item.(map[string]interface{})["volumeInfo"].(map[string]interface{})
+		itemMap, ok := item.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		volumeInfo, ok := itemMap["volumeInfo"].(map[string]interface{})
+		if !ok {
+			continue
+		}
 
 		var book entity.ExternalBookResponse
-		if err := json.Unmarshal(jsonify(volumeInfo), &book); err != nil {
+		if err = json.Unmarshal(jsonify(volumeInfo), &book); err != nil {
 			return nil, err
+		}
+		if id, ok := itemMap["id"].(string); ok {
+			book.GoogleBookId = id
 		}
 		books = append(books, book)
 	}

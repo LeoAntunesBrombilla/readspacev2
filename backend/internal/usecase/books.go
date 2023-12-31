@@ -20,6 +20,6 @@ func (useCase *BooksUseCase) Create(ctx context.Context, book *entity.Book) erro
 	return useCase.repo.Create(ctx, book)
 }
 
-func (useCase *BooksUseCase) Delete(id *int64) error {
-	return useCase.repo.Delete(id)
+func (useCase *BooksUseCase) Delete(c context.Context, bookListId *int64, bookId *int64) error {
+	return useCase.repo.Delete(c, bookListId, bookId)
 }
