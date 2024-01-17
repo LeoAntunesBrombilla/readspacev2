@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
-	"readspacev2/pkg/config"
+	"github.com/LeoAntunesBrombilla/readspacev2/pkg/config"
 	"time"
 
 	"github.com/jackc/pgx/v4/pgxpool"

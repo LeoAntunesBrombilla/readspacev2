@@ -1,11 +1,11 @@
 package handler
 
 import (
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/usecase"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	"readspacev2/internal/entity"
-	"readspacev2/internal/usecase"
 	"strconv"
 	"time"
 )

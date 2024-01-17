@@ -2,8 +2,8 @@ package auth
 
 import (
 	"errors"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
 	"os"
-	"readspacev2/internal/entity"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

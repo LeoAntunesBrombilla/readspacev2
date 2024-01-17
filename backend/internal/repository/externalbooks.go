@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"readspacev2/internal/entity"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
 )
 
 type ExternalBookRepository interface {

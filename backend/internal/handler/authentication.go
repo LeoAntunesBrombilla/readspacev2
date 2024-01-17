@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/usecase"
 	"net/http"
-	"readspacev2/internal/entity"
-	"readspacev2/internal/usecase"
 
 	"github.com/boj/redistore"
 	"github.com/gin-gonic/gin"

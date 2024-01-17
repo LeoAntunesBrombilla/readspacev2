@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"errors"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/auth"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
 	"golang.org/x/crypto/bcrypt"
-	"readspacev2/internal/auth"
-	"readspacev2/internal/repository"
 )
 
 type AuthenticationUseCase interface {

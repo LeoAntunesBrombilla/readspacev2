@@ -2,8 +2,8 @@ package postgres
 
 import (
 	"context"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"readspacev2/internal/repository"
 )
 
 type readSessionsRepository struct {

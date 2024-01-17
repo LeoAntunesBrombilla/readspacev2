@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"golang.org/x/crypto/bcrypt"
-	"readspacev2/internal/entity"
-	"readspacev2/internal/repository"
 	"strconv"
 	"strings"
 )

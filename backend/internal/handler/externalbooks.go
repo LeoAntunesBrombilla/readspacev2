@@ -1,8 +1,8 @@
 package handler
 
 import (
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/usecase"
 	"net/http"
-	"readspacev2/internal/usecase"
 
 	"github.com/gin-gonic/gin"
 )

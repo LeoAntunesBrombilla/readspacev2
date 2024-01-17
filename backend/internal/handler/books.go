@@ -2,10 +2,10 @@ package handler
 
 import (
 	"fmt"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/usecase/interfaces"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"readspacev2/internal/entity"
-	"readspacev2/internal/usecase/interfaces"
 )
 
 type BooksHandler struct {

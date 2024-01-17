@@ -3,10 +3,10 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/lib/pq"
-	"readspacev2/internal/entity"
-	"readspacev2/internal/repository"
 )
 
 type booksRepository struct {

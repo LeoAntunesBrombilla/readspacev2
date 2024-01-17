@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
-	"readspacev2/internal/entity"
-	"readspacev2/internal/repository"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
 )
 
 type BooksUseCase struct {
