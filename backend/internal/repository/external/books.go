@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
-	"readspacev2/internal/entity"
-	"readspacev2/internal/repository"
 	"time"
 )
 
