@@ -41,6 +41,14 @@ type ExternalBookResponse struct {
 }
 
 type Book struct {
+	ID           int64  `json:"id"`
+	BookListID   int64  `json:"bookListId"`
+	GoogleBookId string `json:"googleBookId"`
+	Title        string `json:"title"`
+	CreatedAt    time.Time
+}
+
+type BookResponseModel struct {
 	ID           int64
 	BookListID   int64
 	GoogleBookId string

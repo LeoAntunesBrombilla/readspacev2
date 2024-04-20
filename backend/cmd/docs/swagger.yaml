@@ -1,0 +1,426 @@
+basePath: /api/v1
+definitions:
+  entity.BookListInput:
+    properties:
+      name:
+        type: string
+    type: object
+  entity.DeleteBookInput:
+    properties:
+      book_id:
+        type: integer
+      book_list_id:
+        type: integer
+    type: object
+  entity.ErrorEntity:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  entity.ExternalBook:
+    properties:
+      authors:
+        items:
+          type: string
+        type: array
+      bookListId:
+        type: integer
+      categories:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      googleBookId:
+        type: string
+      imageLinks:
+        properties:
+          smallThumbnail:
+            type: string
+          thumbnail:
+            type: string
+        type: object
+      language:
+        type: string
+      pageCount:
+        type: integer
+      publisher:
+        type: string
+      subtitle:
+        type: string
+      title:
+        type: string
+    type: object
+  entity.Login:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  entity.UserEntity:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  entity.UserInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  entity.UserUpdateDetails:
+    properties:
+      email:
+        type: string
+      username:
+        type: string
+    type: object
+  entity.UserUpdatePassword:
+    properties:
+      new_password:
+        type: string
+      old_password:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a sample server celler server.
+  title: Readspace API
+  version: "1.0"
+paths:
+  /bookList:
+    delete:
+      description: Delete the book list identified by the given ID
+      parameters:
+      - description: Book List ID to delete
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Book list deleted with success
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Delete a book list by ID
+      tags:
+      - bookList
+    get:
+      description: Retrieve a list of all bookList in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.UserEntity'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: List all bookList
+      tags:
+      - bookList
+    post:
+      consumes:
+      - application/json
+      description: Create a new bookList with the input payload
+      parameters:
+      - description: BookList input for creation
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entity.BookListInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Create a new bookList
+      tags:
+      - bookList
+  /books:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a book with the input payload
+      parameters:
+      - description: Book input for deletion
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entity.DeleteBookInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deleted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Delete a book
+      tags:
+      - books
+    post:
+      consumes:
+      - application/json
+      description: Create a new book with the input payload
+      parameters:
+      - description: Book input for creation
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entity.ExternalBook'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Create a new book
+      tags:
+      - books
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate using username and password to get a token
+      parameters:
+      - description: Credentials for login
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully authenticated, token returned
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Authenticate a user and obtain a token
+      tags:
+      - authentication
+  /logout:
+    post:
+      description: Invalidate the user's current session, effectively logging them
+        out
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully logged out
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Log out a user and invalidate the session
+      tags:
+      - authentication
+  /user:
+    delete:
+      description: Delete the user identified by the given ID
+      parameters:
+      - description: User ID to delete
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted with success
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Delete a user by ID
+      tags:
+      - users
+    get:
+      description: Retrieve a list of all users in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.UserEntity'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: List all users
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: Update the user identified by the given ID
+      parameters:
+      - description: User ID to update
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Details to update
+        in: body
+        name: details
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserUpdateDetails'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated with success
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Update a user
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the input payload
+      parameters:
+      - description: User details for creation
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Create a new user
+      tags:
+      - users
+  /user/password:
+    patch:
+      consumes:
+      - application/json
+      description: Update the password of the user identified by the given ID
+      parameters:
+      - description: User ID to update password
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: New password details
+        in: body
+        name: details
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserUpdatePassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User password updated with success
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Update user password
+      tags:
+      - users
+swagger: "2.0"

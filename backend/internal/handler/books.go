@@ -6,6 +6,7 @@ import (
 	"github.com/LeoAntunesBrombilla/readspacev2/internal/usecase/interfaces"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 )
 
 type BooksHandler struct {
@@ -16,8 +17,19 @@ func NewBooksHandler(booksUseCase interfaces.BooksUseCaseInterface) *BooksHandle
 	return &BooksHandler{booksUseCase: booksUseCase}
 }
 
+// Create godoc
+// @Summary Create a new book
+// @Description Create a new book with the input payload
+// @Tags books
+// @Accept  json
+// @Produce  json
+// @Param user body entity.ExternalBook true "Book input for creation"
+// @Success 201 {string} string "Created"
+// @Failure 400 {object} entity.ErrorEntity
+// @Failure 500 {object} entity.ErrorEntity
+// @Router /books [post]
 func (h *BooksHandler) Create(c *gin.Context) {
-	var bookInput entity.ExternalBook
+	var bookInput entity.Book
 
 	err := c.ShouldBindJSON(&bookInput)
 
@@ -30,17 +42,7 @@ func (h *BooksHandler) Create(c *gin.Context) {
 		BookListID:   bookInput.BookListID,
 		GoogleBookId: bookInput.GoogleBookId,
 		Title:        bookInput.Title,
-		Subtitle:     bookInput.Subtitle,
-		Authors:      bookInput.Authors,
-		Publisher:    bookInput.Publisher,
-		Description:  bookInput.Description,
-		PageCount:    bookInput.PageCount,
-		Categories:   bookInput.Categories,
-		Language:     bookInput.Language,
-		ImageLinks: struct {
-			SmallThumbnail string
-			Thumbnail      string
-		}(bookInput.ImageLinks),
+		CreatedAt:    time.Now(),
 	}
 
 	err = h.booksUseCase.Create(c, &book)
@@ -54,6 +56,17 @@ func (h *BooksHandler) Create(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
+// Delete godoc
+// @Summary Delete a book
+// @Description Delete a book with the input payload
+// @Tags books
+// @Accept  json
+// @Produce  json
+// @Param user body entity.DeleteBookInput true "Book input for deletion"
+// @Success 200 {string} string "Deleted"
+// @Failure 400 {object} entity.ErrorEntity
+// @Failure 500 {object} entity.ErrorEntity
+// @Router /books [delete]
 func (h *BooksHandler) Delete(c *gin.Context) {
 	var deleteBook entity.DeleteBookInput
 

@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
 	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
-	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"log"
 )
 
 type bookListRepository struct {
@@ -43,35 +41,19 @@ func (b *bookListRepository) DeleteBookListById(id *int64) error {
 	return nil
 }
 
-func convertTextArrayToStringSlice(textArray pgtype.TextArray) []string {
-	if textArray.Status != pgtype.Present {
-		return nil
-	}
-
-	result := make([]string, len(textArray.Elements))
-	for i, elem := range textArray.Elements {
-		if elem.Status == pgtype.Present {
-			result[i] = elem.String
-		}
-	}
-	return result
-}
-
 func (b *bookListRepository) ListAllBookLists() ([]*entity.BookList, error) {
 
 	query := `
-    SELECT bl.id, bl.user_id, bl.name, bl.created_at, bl.updated_at,
-           b.id AS book_id, blb.list_id AS book_list_id, b.googleBookId, b.title, b.subtitle, b.authors, b.publisher, b.description, 
-           b.page_count, b.categories, b.language, b.small_thumbnail, b.thumbnail
-    FROM book_lists bl
-    LEFT JOIN book_list_books blb ON bl.id = blb.list_id
-    LEFT JOIN books b ON blb.book_id = b.id
-    `
+		SELECT bl.id, bl.user_id, bl.name, bl.created_at, bl.updated_at,
+       		b.id AS book_id, b.google_book_id, b.title, blb.list_id
+		FROM book_lists bl
+		LEFT JOIN book_list_books blb ON bl.id = blb.list_id
+		LEFT JOIN books b ON blb.book_id = b.id
+	`
 
 	rows, err := b.db.Query(context.Background(), query)
-
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Query error:", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -85,66 +67,34 @@ func (b *bookListRepository) ListAllBookLists() ([]*entity.BookList, error) {
 		var bookID sql.NullInt64
 		var bookListId sql.NullInt64
 
-		var googleBookId, title, subtitle, publisher, description, language, smallThumbnail, thumbnail sql.NullString
-		var authorsArray, categoriesArray pgtype.TextArray
-		var pageCount sql.NullInt64
-
 		err = rows.Scan(
 			&bookList.ID, &bookList.UserID, &bookList.Name,
 			&bookList.CreatedAt, &bookList.UpdatedAt,
-			&bookID, &bookListId, &googleBookId, &title, &subtitle, &authorsArray,
-			&publisher, &description, &pageCount,
-			&categoriesArray, &language,
-			&smallThumbnail, &thumbnail,
+			&bookID, &book.GoogleBookId, &book.Title, &bookListId,
 		)
-
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println("Scan error:", err)
 			return nil, err
 		}
 
-		existingBookList, exists := bookListMap[bookList.ID]
-		if !exists {
+		if existingBookList, exists := bookListMap[bookList.ID]; exists {
+			bookList = *existingBookList
+		} else {
 			bookList.Books = []*entity.Book{}
-			existingBookList = &bookList
-			bookListMap[bookList.ID] = existingBookList
-			bookLists = append(bookLists, existingBookList)
+			bookListMap[bookList.ID] = &bookList
+			bookLists = append(bookLists, &bookList)
 		}
 
 		if bookID.Valid {
 			book.ID = bookID.Int64
-			book.BookListID = bookListId.Int64
-			book.Title = title.String
-			book.GoogleBookId = googleBookId.String
-			book.Authors = convertTextArrayToStringSlice(authorsArray)
-			book.Categories = convertTextArrayToStringSlice(categoriesArray)
-			existingBookList.Books = append(existingBookList.Books, &book)
-			if subtitle.Valid {
-				book.Subtitle = subtitle.String
+			if bookListId.Valid {
+				book.BookListID = bookListId.Int64
 			}
-			if publisher.Valid {
-				book.Publisher = publisher.String
-			}
-			if description.Valid {
-				book.Description = description.String
-			}
-			if pageCount.Valid {
-				book.PageCount = int(pageCount.Int64)
-			}
-			if language.Valid {
-				book.Language = language.String
-			}
-			if smallThumbnail.Valid {
-				book.ImageLinks.SmallThumbnail = smallThumbnail.String
-			}
-			if thumbnail.Valid {
-				book.ImageLinks.Thumbnail = thumbnail.String
-			}
+			bookList.Books = append(bookList.Books, &book)
 		}
 	}
 
 	if err = rows.Err(); err != nil {
-		log.Fatal(err)
 		return nil, err
 	}
 

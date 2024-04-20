@@ -109,7 +109,7 @@ func main() {
 	bookListGroup := r.Group("/bookList", middleware.AuthenticationMiddleware(store))
 	{
 		bookListGroup.POST("/", bookListHandler.Create)
-		bookListGroup.GET("/", bookListHandler.ListAllBookLists)
+		bookListGroup.GET("/", bookListHandler.ListAllBookList)
 		bookListGroup.DELETE("/", bookListHandler.DeleteBookListById)
 		bookListGroup.PATCH("/", bookListHandler.UpdateBookList)
 	}
@@ -135,10 +135,12 @@ func main() {
 	})
 
 	//TODO
+	// 0-. Alguns endpoints estao funfando sem o token auth
 	// 1. Add CRUD for a read session
-	// 2. Add CRUD for books
 	// 3. Add userMe endpoint
-	// 3. Add documentation
+	// 4. Add documentation
+	// 5. Melhorar organizacao de pasta
+	// 6. Adicionar testes unitarios e coverage
 
 	r.Run()
 }

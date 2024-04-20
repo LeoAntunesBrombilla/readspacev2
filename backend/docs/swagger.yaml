@@ -1,10 +1,56 @@
 basePath: /api/v1
 definitions:
+  entity.BookListInput:
+    properties:
+      name:
+        type: string
+    type: object
+  entity.DeleteBookInput:
+    properties:
+      book_id:
+        type: integer
+      book_list_id:
+        type: integer
+    type: object
   entity.ErrorEntity:
     properties:
       code:
         type: integer
       message:
+        type: string
+    type: object
+  entity.ExternalBook:
+    properties:
+      authors:
+        items:
+          type: string
+        type: array
+      bookListId:
+        type: integer
+      categories:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      googleBookId:
+        type: string
+      imageLinks:
+        properties:
+          smallThumbnail:
+            type: string
+          thumbnail:
+            type: string
+        type: object
+      language:
+        type: string
+      pageCount:
+        type: integer
+      publisher:
+        type: string
+      subtitle:
+        type: string
+      title:
         type: string
     type: object
   entity.Login:
@@ -57,6 +103,139 @@ info:
   title: Readspace API
   version: "1.0"
 paths:
+  /bookList:
+    delete:
+      description: Delete the book list identified by the given ID
+      parameters:
+      - description: Book List ID to delete
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Book list deleted with success
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Delete a book list by ID
+      tags:
+      - bookList
+    get:
+      description: Retrieve a list of all bookLists in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.UserEntity'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: List all bookList
+      tags:
+      - bookLists
+    post:
+      consumes:
+      - application/json
+      description: Create a new bookList with the input payload
+      parameters:
+      - description: BookList input for creation
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entity.BookListInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Create a new bookList
+      tags:
+      - bookList
+  /books:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a book with the input payload
+      parameters:
+      - description: Book input for deletion
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entity.DeleteBookInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deleted
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Delete a book
+      tags:
+      - books
+    post:
+      consumes:
+      - application/json
+      description: Create a new book with the input payload
+      parameters:
+      - description: Book input for creation
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entity.ExternalBook'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.ErrorEntity'
+      summary: Create a new book
+      tags:
+      - books
   /login:
     post:
       consumes:

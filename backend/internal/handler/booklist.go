@@ -46,11 +46,6 @@ func (h *BookListHandler) Create(c *gin.Context) {
 		return
 	}
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, entity.ErrorEntity{Code: 400, Message: "Bad Request"})
-		return
-	}
-
 	bookList := entity.BookList{
 		UserID: tokenClaims.UserID,
 		Name:   bookListInput.Name,
@@ -67,15 +62,15 @@ func (h *BookListHandler) Create(c *gin.Context) {
 	return
 }
 
-// ListAllBookLists godoc
+// ListAllBookList godoc
 // @Summary List all bookList
-// @Description Retrieve a list of all bookLists in the database
-// @Tags bookLists
+// @Description Retrieve a list of all bookList in the database
+// @Tags bookList
 // @Produce  json
 // @Success 200 {array} entity.UserEntity
 // @Failure 500 {object} entity.ErrorEntity
 // @Router /bookList [get]
-func (h *BookListHandler) ListAllBookLists(c *gin.Context) {
+func (h *BookListHandler) ListAllBookList(c *gin.Context) {
 	bookLists, err := h.bookListUseCase.ListAllBookLists()
 
 	if err != nil {
