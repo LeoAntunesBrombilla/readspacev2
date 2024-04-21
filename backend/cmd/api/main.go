@@ -91,6 +91,10 @@ func main() {
 	booksUseCase := usecase.NewBooksUseCase(booksRepo)
 	booksHandler := handler.NewBooksHandler(booksUseCase)
 
+	readSessionRepo := postgres.NewReadSessionsRepository(db)
+	readSessionUseCase := usecase.NewReadingSessionUseCase(readSessionRepo)
+	readSessionHandler := handler.NewReadSessionHandler(readSessionUseCase)
+
 	r := gin.Default()
 
 	r.POST("/login", authHandler.Login)
@@ -118,6 +122,11 @@ func main() {
 	{
 		bookGroup.POST("/", booksHandler.Create)
 		bookGroup.DELETE("/", booksHandler.Delete)
+	}
+
+	readSessionGroup := r.Group("/readSession", middleware.AuthenticationMiddleware(store))
+	{
+		readSessionGroup.POST("/", readSessionHandler.CreateReadSession)
 	}
 
 	externalBookServiceGroup := r.Group("/searchBook", middleware.AuthenticationMiddleware(store))

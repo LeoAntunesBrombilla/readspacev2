@@ -66,11 +66,13 @@ func (b *bookListRepository) ListAllBookLists() ([]*entity.BookList, error) {
 		var book entity.Book
 		var bookID sql.NullInt64
 		var bookListId sql.NullInt64
+		var googleBookId sql.NullString // Changed to handle NULL values
+		var title sql.NullString        // Changed to handle NULL values
 
 		err = rows.Scan(
 			&bookList.ID, &bookList.UserID, &bookList.Name,
 			&bookList.CreatedAt, &bookList.UpdatedAt,
-			&bookID, &book.GoogleBookId, &book.Title, &bookListId,
+			&bookID, &googleBookId, &title, &bookListId,
 		)
 		if err != nil {
 			fmt.Println("Scan error:", err)
@@ -87,6 +89,14 @@ func (b *bookListRepository) ListAllBookLists() ([]*entity.BookList, error) {
 
 		if bookID.Valid {
 			book.ID = bookID.Int64
+			book.GoogleBookId = googleBookId.String
+			book.Title = title.String
+			if googleBookId.Valid {
+				book.GoogleBookId = googleBookId.String
+			}
+			if title.Valid {
+				book.Title = title.String
+			}
 			if bookListId.Valid {
 				book.BookListID = bookListId.Int64
 			}
