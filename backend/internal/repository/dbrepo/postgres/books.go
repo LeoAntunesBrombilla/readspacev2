@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
-	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository/interfaces"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
@@ -13,7 +13,7 @@ type booksRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewBooksRepository(db *pgxpool.Pool) repository.BooksRepository {
+func NewBooksRepository(db *pgxpool.Pool) interfaces.BooksRepository {
 	return &booksRepository{db: db}
 }
 

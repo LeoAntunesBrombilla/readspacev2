@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
-	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository/interfaces"
 )
 
 type ExternalBookServiceUseCaseInterface interface {
@@ -11,10 +11,10 @@ type ExternalBookServiceUseCaseInterface interface {
 }
 
 type ExternalBookServiceUseCase struct {
-	repo repository.ExternalBookRepository
+	repo interfaces.ExternalBookRepository
 }
 
-func NewExternalBookServiceUseCase(repo repository.ExternalBookRepository) *ExternalBookServiceUseCase {
+func NewExternalBookServiceUseCase(repo interfaces.ExternalBookRepository) *ExternalBookServiceUseCase {
 	return &ExternalBookServiceUseCase{repo: repo}
 }
 

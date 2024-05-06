@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
-	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository/interfaces"
 )
 
 type UserUseCaseInterface interface {
@@ -16,10 +16,10 @@ type UserUseCaseInterface interface {
 }
 
 type UserUseCase struct {
-	repo repository.UserRepository
+	repo interfaces.UserRepository
 }
 
-func NewUserUseCase(repo repository.UserRepository) *UserUseCase {
+func NewUserUseCase(repo interfaces.UserRepository) *UserUseCase {
 	return &UserUseCase{repo: repo}
 }
 

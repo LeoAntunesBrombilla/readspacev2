@@ -3,7 +3,7 @@ package usecase
 import (
 	"errors"
 	"github.com/LeoAntunesBrombilla/readspacev2/internal/auth"
-	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository/interfaces"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -13,11 +13,11 @@ type AuthenticationUseCase interface {
 }
 
 type AuthenticationUseCaseImpl struct {
-	authRepo repository.AuthenticationRepository
-	userRepo repository.UserRepository
+	authRepo interfaces.AuthenticationRepository
+	userRepo interfaces.UserRepository
 }
 
-func NewAuthenticationUseCase(authRepo repository.AuthenticationRepository, userRepo repository.UserRepository) AuthenticationUseCase {
+func NewAuthenticationUseCase(authRepo interfaces.AuthenticationRepository, userRepo interfaces.UserRepository) AuthenticationUseCase {
 	return &AuthenticationUseCaseImpl{
 		authRepo: authRepo,
 		userRepo: userRepo,

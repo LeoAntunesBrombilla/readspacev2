@@ -127,6 +127,7 @@ func main() {
 	readSessionGroup := r.Group("/readSession", middleware.AuthenticationMiddleware(store))
 	{
 		readSessionGroup.POST("/", readSessionHandler.CreateReadSession)
+		readSessionGroup.GET("/", readSessionHandler.GetReadSessionByBook)
 	}
 
 	externalBookServiceGroup := r.Group("/searchBook", middleware.AuthenticationMiddleware(store))

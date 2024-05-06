@@ -3,14 +3,14 @@ package usecase
 import (
 	"context"
 	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
-	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository/interfaces"
 )
 
 type BooksUseCase struct {
-	repo repository.BooksRepository
+	repo interfaces.BooksRepository
 }
 
-func NewBooksUseCase(repo repository.BooksRepository) *BooksUseCase {
+func NewBooksUseCase(repo interfaces.BooksRepository) *BooksUseCase {
 	return &BooksUseCase{
 		repo: repo,
 	}

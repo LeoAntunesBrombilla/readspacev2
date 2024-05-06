@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
-	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository/interfaces"
 	"io"
 	"net/http"
 	"net/url"
@@ -15,7 +15,7 @@ import (
 
 type externalBookRepository struct{}
 
-func NewExternalBookRepository() repository.ExternalBookRepository {
+func NewExternalBookRepository() interfaces.ExternalBookRepository {
 	return &externalBookRepository{}
 }
 

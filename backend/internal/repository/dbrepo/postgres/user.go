@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/LeoAntunesBrombilla/readspacev2/internal/entity"
-	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository"
+	"github.com/LeoAntunesBrombilla/readspacev2/internal/repository/interfaces"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"golang.org/x/crypto/bcrypt"
@@ -17,7 +17,7 @@ type userRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewUserRepository(db *pgxpool.Pool) repository.UserRepository {
+func NewUserRepository(db *pgxpool.Pool) interfaces.UserRepository {
 	return &userRepository{db: db}
 }
 
