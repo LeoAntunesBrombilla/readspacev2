@@ -23,3 +23,8 @@ type ReadingTime struct {
 type ReadingDurationInput struct {
 	Time int `json:"time"`
 }
+
+type ReadingSessionModel struct {
+	ReadSessionFullTime int
+	ReadSessions        []ReadingSession
+}
